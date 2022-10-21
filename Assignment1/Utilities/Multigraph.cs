@@ -2,31 +2,19 @@
 
 namespace Utilities
 {
-    /// <summary>
-    /// Toolbox-class used for representing an undirected multigraph.
-    /// </summary>
     public class Multigraph
     {
-        /// <summary>
-        /// The number of vertices.
-        /// </summary>
-        public int V { get; private set; }
-        
-        /// <summary>
-        /// The number of edges.
-        /// </summary>
+        private List<Vertex> vertices;
+
+        private List<List<Vertex>> adjacencyMatrix;
+
         public int E { get; private set; }
 
-        /// <summary>
-        /// The list of edges in the graph.
-        /// </summary>
-        private List<int>[] adjacencyMatrix;
+        public int V
+        {
+            get => this.vertices.Count;
+        }
 
-        /// <summary>
-        /// Creates a multigraph with the given amount of vertices.
-        /// </summary>
-        /// <param name="v">The amount of vertices</param>
-        /// <exception cref="ArgumentException">Thrown if the number of vertices is negative.</exception>
         public Multigraph(int v)
         {
             if (v < 0)
@@ -34,12 +22,13 @@ namespace Utilities
                 throw new ArgumentException("There must be a non-negative number of vertices");
             }
 
-            this.V = v;
-            this.adjacencyMatrix = new List<int>[v];
+            this.vertices = new List<Vertex>(v);
+            this.adjacencyMatrix = new List<List<Vertex>>(v);
 
-            for (int i = 0; i < this.V; i++)
+            for (int i = 0; i < v; i++)
             {
-                this.adjacencyMatrix[i] = new List<int>();
+                this.vertices.Add(new Vertex(i));
+                this.adjacencyMatrix.Add(new List<Vertex>());
             }
         }
 
@@ -70,40 +59,79 @@ namespace Utilities
                 throw new InvalidGraphDefinitionException("An error occured while parsing the graph.", e);
             }
         }
-
-        public void AddEdge(int v1, int v2)
+        
+        public void ContractRandomEdge(bool enableDisplay = true)
         {
-            this.ValidateVertex(v1);
-            this.ValidateVertex(v2);
+            if (this.E < 1)
+            {
+                throw new InvalidOperationException("There must be an edge to perform contraction.");
+            }
 
-            this.adjacencyMatrix[v1].Add(v2);
-            this.adjacencyMatrix[v2].Add(v1);
+            var randomGenerator = new Random();
+            var rndOrigin = randomGenerator.Next(0, this.V);
+            var rndEnd = randomGenerator.Next(0, this.adjacencyMatrix[rndOrigin].Count);
 
-            this.E++;
+            if (enableDisplay)
+            {
+                Console.WriteLine($"Contracting ({rndOrigin}, {rndEnd}).");
+            }
+
+            this.adjacencyMatrix[rndOrigin].RemoveAll(v => v == this.vertices[rndEnd]);
+            this.adjacencyMatrix[rndEnd].RemoveAll(v => v == this.vertices[rndOrigin]);
+
+            this.adjacencyMatrix[rndEnd].ForEach(v => this.AddEdge(this.vertices[rndOrigin], v));
+
+            this.RemoveVertex(rndEnd);
         }
 
-        public void ContractEdge()
+        public void AddEdge(int v, int w)
         {
-            
+            this.ValidateVertex(v);
+            this.ValidateVertex(w);
+
+            this.adjacencyMatrix[v].Add(this.vertices[w]);
+            this.adjacencyMatrix[w].Add(this.vertices[v]);
+
+            this.E++;
         }
 
         public IEnumerable<int> AdjOf(int vertex)
         {
             this.ValidateVertex(vertex);
-            return this.adjacencyMatrix[vertex];
+            return this.adjacencyMatrix[vertex].Select(v => v.Number);
         }
 
-        public int DegreeOf(int vertex)
-        {
-            this.ValidateVertex(vertex);
-            return this.adjacencyMatrix[vertex].Count;
-        }
+        private void AddEdge(Vertex v, Vertex w)
+            => this.AddEdge(v.Number, w.Number);
 
-        private void ValidateVertex(int number)
+        private void RemoveVertex(int vertex)
         {
-            if (number < 0 || number >= this.V)
+            foreach (var neighbor in this.adjacencyMatrix[vertex])
             {
-                throw new ArgumentException($"The vertex {number} is not in the graph.");
+                for (int i = 0; i < this.adjacencyMatrix[neighbor.Number].Count; i++)
+                {
+                    if (this.adjacencyMatrix[neighbor.Number][i] == vertex)
+                    {
+                        this.adjacencyMatrix[neighbor.Number].RemoveAt(i);
+                    }
+                }
+            }
+
+            this.adjacencyMatrix.RemoveAt(vertex);
+            this.vertices.RemoveAt(vertex);
+
+            // We rename the vertices that had a number higher that the one that has been removed.
+            for (int i = vertex; i < this.V; i++)
+            {
+                this.vertices[i].Number--;
+            }
+        }
+
+        private void ValidateVertex(int vertex)
+        {
+            if (vertex < 0 || vertex >= this.V)
+            {
+                throw new ArgumentException($"The vertex {vertex} is not in the graph.");
             }
         }
     }
