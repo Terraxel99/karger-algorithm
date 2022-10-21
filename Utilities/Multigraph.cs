@@ -22,6 +22,7 @@ namespace Utilities
                 throw new ArgumentException("There must be a non-negative number of vertices");
             }
 
+            this.E = 0;
             this.vertices = new List<Vertex>(v);
             this.adjacencyMatrix = new List<List<Vertex>>(v);
 
@@ -29,6 +30,32 @@ namespace Utilities
             {
                 this.vertices.Add(new Vertex(i));
                 this.adjacencyMatrix.Add(new List<Vertex>());
+            }
+        }
+
+        public void Test()
+        {
+            vertices[0].Number = 32000;
+        }
+
+        public Multigraph(Multigraph g)
+            : this(g.V)
+        {
+            this.E = g.E;
+
+            for (int v = 0; v < g.V; v++)
+            {
+                Stack<int> reverse = new Stack<int>();
+
+                foreach (var neighbour in g.AdjOf(v))
+                {
+                    reverse.Push(neighbour);
+                }
+
+                foreach (var vertex in reverse)
+                {
+                    this.adjacencyMatrix[v].Add(this.vertices[vertex]);
+                }
             }
         }
 
@@ -69,7 +96,9 @@ namespace Utilities
 
             var randomGenerator = new Random();
             var rndOrigin = randomGenerator.Next(0, this.V);
-            var rndEnd = randomGenerator.Next(0, this.adjacencyMatrix[rndOrigin].Count);
+
+            var rndTemp = randomGenerator.Next(0, this.adjacencyMatrix[rndOrigin].Count);
+            var rndEnd = this.vertices[this.adjacencyMatrix[rndOrigin][rndTemp].Number].Number;
 
             if (enableDisplay)
             {
@@ -99,6 +128,12 @@ namespace Utilities
         {
             this.ValidateVertex(vertex);
             return this.adjacencyMatrix[vertex].Select(v => v.Number);
+        }
+
+        public int DegreeOf(int vertex)
+        {
+            this.ValidateVertex(vertex);
+            return this.adjacencyMatrix[vertex].Count;
         }
 
         private void AddEdge(Vertex v, Vertex w)
