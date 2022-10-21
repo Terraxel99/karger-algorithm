@@ -15,6 +15,11 @@ namespace Utilities
             get => this.vertices.Count;
         }
 
+        public IEnumerable<Vertex> Vertices
+        {
+            get => this.vertices;
+        }
+
         public Multigraph(int v)
         {
             if (v < 0)

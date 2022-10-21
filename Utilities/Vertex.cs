@@ -1,6 +1,6 @@
 ﻿namespace Utilities
 {
-    internal class Vertex
+    public class Vertex
     {
         public int Number { get; set; }
 

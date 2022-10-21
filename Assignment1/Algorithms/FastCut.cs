@@ -10,7 +10,8 @@ namespace Assignment1.Algorithms
         {
             if (graph.V <= bruteForceBound)
             {
-                return graph.SolveBruteForce();
+                var bruteForceSolver = new BruteForceMinCutSolver(graph);
+                return bruteForceSolver.Solve();
             }
 
             int t = Convert.ToInt32(Math.Ceiling(1 + (graph.V / Math.Sqrt(2))));
