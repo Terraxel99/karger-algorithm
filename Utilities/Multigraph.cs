@@ -38,11 +38,6 @@ namespace Utilities
             }
         }
 
-        public void Test()
-        {
-            vertices[0].Number = 32000;
-        }
-
         public Multigraph(Multigraph g)
             : this(g.V)
         {
@@ -91,6 +86,9 @@ namespace Utilities
                 throw new InvalidGraphDefinitionException("An error occured while parsing the graph.", e);
             }
         }
+
+        public bool HasIsolatedVertices()
+            => this.adjacencyMatrix.Any(m => m.Count == 0);
         
         public void ContractRandomEdge(bool enableDisplay = true)
         {
@@ -102,7 +100,7 @@ namespace Utilities
             var randomGenerator = new Random();
             var rndOrigin = randomGenerator.Next(0, this.V);
 
-            var rndTemp = randomGenerator.Next(0, this.adjacencyMatrix[rndOrigin].Count);
+            var rndTemp = randomGenerator.Next(0, this.DegreeOf(rndOrigin));
             var rndEnd = this.vertices[this.adjacencyMatrix[rndOrigin][rndTemp].Number].Number;
 
             if (enableDisplay)

@@ -15,23 +15,14 @@ namespace Assignment1.Algorithms
             }
 
             int t = Convert.ToInt32(Math.Ceiling(1 + (graph.V / Math.Sqrt(2))));
-            int mincut = int.MaxValue;
 
-            for (int v = graph.V; v > t; v--)
-            {
-                var h1 = new Multigraph(graph);
-                var h2 = new Multigraph(graph);
+            var h1 = new Multigraph(graph).ContractionSequence(limitVtx: t, enableDisplay: false);
+            var h2 = new Multigraph(graph).ContractionSequence(limitVtx: t, enableDisplay: false);
 
-                h1.ContractRandomEdge();
-                h2.ContractRandomEdge();
+            var cutH1 = h1.SolveFastcut();
+            var cutH2 = h2.SolveFastcut();
 
-                int h1Answer = h1.SolveFastcut();
-                int h2Answer = h2.SolveFastcut();
-
-                mincut = h1Answer < h2Answer ? h1Answer : h2Answer;
-            }
-
-            return mincut;
+            return cutH1 < cutH2 ? cutH1 : cutH2;
         }
     }
 }
