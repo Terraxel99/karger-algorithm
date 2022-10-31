@@ -1,5 +1,8 @@
 ﻿namespace Utilities
 {
+    /// <summary>
+    /// Class representing a vertex of a graph.
+    /// </summary>
     public class Vertex
     {
         public int Number { get; set; }

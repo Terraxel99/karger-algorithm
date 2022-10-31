@@ -2,15 +2,26 @@
 
 namespace Assignment1.Algorithms
 {
+    /// <summary>
+    /// Class dedicated to the bruteforce solving of minimum cut problem.
+    /// </summary>
     internal class BruteForceMinCutSolver
     {
         private Multigraph graph;
 
         private int smallestCut = int.MaxValue;
 
+        /// <summary>
+        /// Creates an instance of the bruteforce algorithm for minimum cut on the given graph.
+        /// </summary>
+        /// <param name="g">The graph on which bruteforce algorithm will be executed.</param>
         public BruteForceMinCutSolver(Multigraph g)
             => this.graph = g;
 
+        /// <summary>
+        /// Solves the minimum cut problem.
+        /// </summary>
+        /// <returns>The cut of minimum size.</returns>
         public int Solve()
         {
             EnumerateSubsets(graph.Vertices.Select(v => v.Number), new List<int>(), 0);
@@ -22,6 +33,12 @@ namespace Assignment1.Algorithms
             return smallestCut;
         }
 
+        /// <summary>
+        /// Enumerates all the subsets of a set recursively.
+        /// </summary>
+        /// <param name="nums">All the elements of the superset.</param>
+        /// <param name="output">The output.</param>
+        /// <param name="index">The current index.</param>
         private void EnumerateSubsets(IEnumerable<int> nums, List<int> output, int index)
         {
             // Base Condition
@@ -37,6 +54,10 @@ namespace Assignment1.Algorithms
             EnumerateSubsets(nums, new List<int>(output), index + 1);
         }
 
+        /// <summary>
+        /// Determines the size of the cut for a given partition of the set of vertices.
+        /// </summary>
+        /// <param name="vertices">The first set of the partition.</param>
         private void DetermineCutsizeOfSet(List<int> vertices)
         {
             // A cut-set must be a PROPER NON-EMPTY subset of vertices.

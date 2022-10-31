@@ -2,24 +2,41 @@
 
 namespace Utilities
 {
+    /// <summary>
+    /// Class representing a multigraph.
+    /// </summary>
     public class Multigraph
     {
         private List<Vertex> vertices;
 
         private List<List<Vertex>> adjacencyMatrix;
 
+        /// <summary>
+        /// The amount of edges.
+        /// </summary>
         public int E { get; private set; }
 
+        /// <summary>
+        /// The amount of vertices.
+        /// </summary>
         public int V
         {
             get => this.vertices.Count;
         }
 
+        /// <summary>
+        /// The vertices.
+        /// </summary>
         public IEnumerable<Vertex> Vertices
         {
             get => this.vertices;
         }
 
+        /// <summary>
+        /// Creates a multigraph with a given amount of vertices.
+        /// </summary>
+        /// <param name="v">The amount of vertices.</param>
+        /// <exception cref="ArgumentException">When the amount of vertices is invalid.</exception>
         public Multigraph(int v)
         {
             if (v < 0)
@@ -38,6 +55,10 @@ namespace Utilities
             }
         }
 
+        /// <summary>
+        /// Creates a copy of a given multigraph.
+        /// </summary>
+        /// <param name="g">The multigraph to replicate.</param>
         public Multigraph(Multigraph g)
             : this(g.V)
         {
@@ -59,6 +80,13 @@ namespace Utilities
             }
         }
 
+        /// <summary>
+        /// Creates a multigraph from an input stream.
+        /// </summary>
+        /// <param name="stream">The input stream.</param>
+        /// <returns>The multigraph.</returns>
+        /// <exception cref="ArgumentException">When the stream is invalid.</exception>
+        /// <exception cref="InvalidGraphDefinitionException">When the graph structure is invalid.</exception>
         public static Multigraph FromStream(StreamReader stream)
         {
             if (stream == null)
@@ -87,9 +115,18 @@ namespace Utilities
             }
         }
 
+        /// <summary>
+        /// Determines if the graph has isolated vertices.
+        /// </summary>
+        /// <returns>Whether the graph has isolated vertices.</returns>
         public bool HasIsolatedVertices()
             => this.adjacencyMatrix.Any(m => m.Count == 0);
         
+        /// <summary>
+        /// Performs a contraction on a random edge of the graph.
+        /// </summary>
+        /// <param name="enableDisplay">Whether the operation should be outputted to standard output or not.</param>
+        /// <exception cref="InvalidOperationException">If the operation cannot be performed.</exception>
         public void ContractRandomEdge(bool enableDisplay = true)
         {
             if (this.E < 1)
@@ -116,6 +153,11 @@ namespace Utilities
             this.RemoveVertex(rndEnd);
         }
 
+        /// <summary>
+        /// Adds an edge between two vertices.
+        /// </summary>
+        /// <param name="v">The first vertex.</param>
+        /// <param name="w">The second vertex.</param>
         public void AddEdge(int v, int w)
         {
             this.ValidateVertex(v);
@@ -127,21 +169,40 @@ namespace Utilities
             this.E++;
         }
 
+        /// <summary>
+        /// Gets the neighbors of the given vertex.
+        /// </summary>
+        /// <param name="vertex">The vertex to retrieve the neighbors of.</param>
+        /// <returns>The enumeration of neighbors.</returns>
         public IEnumerable<int> AdjOf(int vertex)
         {
             this.ValidateVertex(vertex);
             return this.adjacencyMatrix[vertex].Select(v => v.Number);
         }
 
+        /// <summary>
+        /// Gets the degree of a vertex.
+        /// </summary>
+        /// <param name="vertex">The vertex to compute the degree of.</param>
+        /// <returns>The degree.</returns>
         public int DegreeOf(int vertex)
         {
             this.ValidateVertex(vertex);
             return this.adjacencyMatrix[vertex].Count;
         }
 
+        /// <summary>
+        /// Adds an edge between two vertices.
+        /// </summary>
+        /// <param name="v">The first vertex.</param>
+        /// <param name="w">The second vertex.</param>
         private void AddEdge(Vertex v, Vertex w)
             => this.AddEdge(v.Number, w.Number);
 
+        /// <summary>
+        /// Removes a vertex and recalculates the data structure accordingly.
+        /// </summary>
+        /// <param name="vertex">The vertex that should be removed.</param>
         private void RemoveVertex(int vertex)
         {
             foreach (var neighbor in this.adjacencyMatrix[vertex])
@@ -165,6 +226,11 @@ namespace Utilities
             }
         }
 
+        /// <summary>
+        /// Ensures a given vertex is in the graph.
+        /// </summary>
+        /// <param name="vertex">The vertex to check.</param>
+        /// <exception cref="ArgumentException">If the vertex is not in the graph.</exception>
         private void ValidateVertex(int vertex)
         {
             if (vertex < 0 || vertex >= this.V)
