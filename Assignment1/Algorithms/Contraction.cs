@@ -16,7 +16,7 @@ namespace Assignment1.Algorithms
         /// <returns>The cut of minimum size.</returns>
         public static int SolveKarger(this Multigraph graph)
         {
-            graph.ContractionSequence(limitVtx: kargerVerticesRemaining);
+            graph.ContractionSequence(limitVtx: kargerVerticesRemaining, enableDisplay: false);
 
             // The min-cut is the degree of one of the two edges.
             return graph.DegreeOf(0);
