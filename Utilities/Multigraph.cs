@@ -160,6 +160,12 @@ namespace Utilities
         /// <param name="w">The second vertex.</param>
         public void AddEdge(int v, int w)
         {
+            // In this specific project, we omit loops.
+            if (v == w)
+            {
+                return;
+            }
+
             this.ValidateVertex(v);
             this.ValidateVertex(w);
 
